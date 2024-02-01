@@ -41,15 +41,24 @@ export function activate(context: vscode.ExtensionContext) {
 		// it's type is `Memento & {setKeysForSync}`
 		// setKeysForSync = set the keys whose values should be synchronized across devices
 		// on Ubuntu, its data is stored at `/home/gusalbukrk/.config/Code/User/globalStorage/state.vscdb`
-		await context.globalState.update( // add item
-			context.globalState.keys().length.toString(),
-			Math.random().toString()
-		);
-		console.log( // print as an object
-			Object.fromEntries(
-				context.globalState.keys().map(k => [k, context.globalState.get(k)])
-			)
-		);
+		// await context.globalState.update( // add item
+		// 	context.globalState.keys().length.toString(),
+		// 	Math.random().toString()
+		// );
+		// console.log( // print as an object
+		// 	Object.fromEntries(
+		// 		context.globalState.keys().map(k => [k, context.globalState.get(k)])
+		// 	)
+		// );
+
+		// secrets are persisted across reloads and are independent of the current opened workspace
+		// storage location varies by OS
+		// https://github.com/microsoft/vscode-discussions/discussions/748#discussioncomment-7741629
+		// available methods are: get, store and delete (all of them have a thenable return type)
+		await context.secrets.store('my_secret', 'foobar');
+		console.log(await context.secrets.get('my_secret'));
+		await context.secrets.delete('my_secret');
+		console.log(await context.secrets.get('my_secret'));
 	});
 
 	context.subscriptions.push(disposable);
